@@ -19,7 +19,7 @@ def generate_session_token() -> str:
     return secrets.token_urlsafe(32)
 
 def handler(event: dict, context) -> dict:
-    """API для регистрации и авторизации пользователей"""
+    """API для регистрации, авторизации и управления профилем пользователей"""
     method = event.get('httpMethod', 'GET')
     
     if method == 'OPTIONS':
@@ -27,12 +27,18 @@ def handler(event: dict, context) -> dict:
             'statusCode': 200,
             'headers': {
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, X-Authorization'
+                'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Authorization'
             },
             'body': '',
             'isBase64Encoded': False
         }
+    
+    if method == 'GET':
+        return get_profile(event)
+    
+    if method == 'PUT':
+        return update_profile(event)
     
     if method != 'POST':
         return {
@@ -286,3 +292,186 @@ def logout_user(event: dict) -> dict:
             }
     finally:
         conn.close()
+
+def get_user_from_session(session_token: str):
+    """Получение пользователя по токену сессии"""
+    conn = get_db_connection()
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(
+                """SELECT u.id, u.email, u.full_name, u.user_type, u.created_at
+                   FROM user_sessions s
+                   JOIN users u ON s.user_id = u.id
+                   WHERE s.session_token = %s AND s.expires_at > NOW()""",
+                (session_token,)
+            )
+            return cur.fetchone()
+    finally:
+        conn.close()
+
+def get_profile(event: dict) -> dict:
+    """Получение данных профиля пользователя"""
+    auth_header = event.get('headers', {}).get('X-Authorization', '')
+    session_token = auth_header.replace('Bearer ', '') if auth_header else ''
+    
+    if not session_token:
+        return {
+            'statusCode': 401,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': 'Требуется авторизация'}),
+            'isBase64Encoded': False
+        }
+    
+    user = get_user_from_session(session_token)
+    if not user:
+        return {
+            'statusCode': 401,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': 'Сессия истекла'}),
+            'isBase64Encoded': False
+        }
+    
+    return {
+        'statusCode': 200,
+        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+        'body': json.dumps({
+            'success': True,
+            'profile': {
+                'id': user['id'],
+                'email': user['email'],
+                'full_name': user['full_name'],
+                'user_type': user['user_type'],
+                'created_at': user['created_at'].isoformat()
+            }
+        }),
+        'isBase64Encoded': False
+    }
+
+def update_profile(event: dict) -> dict:
+    """Обновление данных профиля пользователя"""
+    auth_header = event.get('headers', {}).get('X-Authorization', '')
+    session_token = auth_header.replace('Bearer ', '') if auth_header else ''
+    
+    if not session_token:
+        return {
+            'statusCode': 401,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': 'Требуется авторизация'}),
+            'isBase64Encoded': False
+        }
+    
+    user = get_user_from_session(session_token)
+    if not user:
+        return {
+            'statusCode': 401,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': 'Сессия истекла'}),
+            'isBase64Encoded': False
+        }
+    
+    try:
+        body = json.loads(event.get('body', '{}'))
+        full_name = body.get('full_name', '').strip()
+        email = body.get('email', '').strip().lower()
+        current_password = body.get('current_password', '')
+        new_password = body.get('new_password', '')
+        
+        if not full_name and not email and not new_password:
+            return {
+                'statusCode': 400,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'error': 'Нет данных для обновления'}),
+                'isBase64Encoded': False
+            }
+        
+        conn = get_db_connection()
+        try:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                if email and email != user['email']:
+                    cur.execute("SELECT id FROM users WHERE email = %s AND id != %s", (email, user['id']))
+                    if cur.fetchone():
+                        return {
+                            'statusCode': 400,
+                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'body': json.dumps({'error': 'Email уже используется'}),
+                            'isBase64Encoded': False
+                        }
+                
+                if new_password:
+                    if not current_password:
+                        return {
+                            'statusCode': 400,
+                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'body': json.dumps({'error': 'Укажите текущий пароль'}),
+                            'isBase64Encoded': False
+                        }
+                    
+                    cur.execute("SELECT password_hash FROM users WHERE id = %s", (user['id'],))
+                    result = cur.fetchone()
+                    if hash_password(current_password) != result['password_hash']:
+                        return {
+                            'statusCode': 400,
+                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'body': json.dumps({'error': 'Неверный текущий пароль'}),
+                            'isBase64Encoded': False
+                        }
+                    
+                    password_hash = hash_password(new_password)
+                    cur.execute(
+                        "UPDATE users SET password_hash = %s, updated_at = NOW() WHERE id = %s",
+                        (password_hash, user['id'])
+                    )
+                
+                update_parts = []
+                params = []
+                
+                if full_name:
+                    update_parts.append("full_name = %s")
+                    params.append(full_name)
+                
+                if email and email != user['email']:
+                    update_parts.append("email = %s")
+                    params.append(email)
+                
+                if update_parts:
+                    update_parts.append("updated_at = NOW()")
+                    params.append(user['id'])
+                    cur.execute(
+                        f"UPDATE users SET {', '.join(update_parts)} WHERE id = %s RETURNING id, email, full_name, user_type",
+                        params
+                    )
+                    updated_user = cur.fetchone()
+                else:
+                    cur.execute(
+                        "SELECT id, email, full_name, user_type FROM users WHERE id = %s",
+                        (user['id'],)
+                    )
+                    updated_user = cur.fetchone()
+                
+                conn.commit()
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({
+                        'success': True,
+                        'message': 'Профиль обновлён',
+                        'profile': {
+                            'id': updated_user['id'],
+                            'email': updated_user['email'],
+                            'full_name': updated_user['full_name'],
+                            'user_type': updated_user['user_type']
+                        }
+                    }),
+                    'isBase64Encoded': False
+                }
+        finally:
+            conn.close()
+    
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': f'Ошибка сервера: {str(e)}'}),
+            'isBase64Encoded': False
+        }

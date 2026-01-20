@@ -91,6 +91,14 @@ const Index = () => {
                   Привет, <span className="text-foreground font-semibold">{user.full_name}</span>
                 </span>
                 <Button 
+                  onClick={() => navigate('/profile')}
+                  variant="ghost"
+                  className="text-foreground hover:text-primary"
+                >
+                  <Icon name="Settings" className="mr-2" size={18} />
+                  Профиль
+                </Button>
+                <Button 
                   onClick={() => navigate(user.user_type === 'employer' ? '/employer-cabinet' : '/applicant-cabinet')} 
                   className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-background"
                 >

@@ -1,4 +1,7 @@
 {
+  "favorites": "https://functions.poehali.dev/675cda5f-c23f-47c9-a0b0-17b8e1c39a83",
+  "vacancies": "https://functions.poehali.dev/d62cf512-4bb6-440b-a47e-1c40ac68aec5",
+  "applications": "https://functions.poehali.dev/2c41da4d-f2df-4c58-91c0-b1f93972753c",
   "resumes": "https://functions.poehali.dev/75a33e6f-3f2f-4f58-9d10-6b8fe65aa44f",
   "auth": "https://functions.poehali.dev/a748fa5e-94c9-4a37-bbe5-0033817cf79f"
 }

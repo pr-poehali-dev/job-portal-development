@@ -79,8 +79,8 @@ const Index = () => {
           </div>
           
           <div className="hidden md:flex items-center gap-6">
-            <button className="text-muted-foreground hover:text-foreground transition-colors">Вакансии</button>
-            <button className="text-muted-foreground hover:text-foreground transition-colors">Компании</button>
+            <button onClick={() => navigate('/vacancies')} className="text-muted-foreground hover:text-foreground transition-colors">Вакансии</button>
+            <button onClick={() => setActiveTab('cabinet')} className="text-muted-foreground hover:text-foreground transition-colors">Личный кабинет</button>
             <button className="text-muted-foreground hover:text-foreground transition-colors">О платформе</button>
           </div>
 
@@ -90,6 +90,13 @@ const Index = () => {
                 <span className="text-sm text-muted-foreground hidden md:block">
                   Привет, <span className="text-foreground font-semibold">{user.full_name}</span>
                 </span>
+                <Button 
+                  onClick={() => navigate(user.user_type === 'employer' ? '/employer-cabinet' : '/applicant-cabinet')} 
+                  className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-background"
+                >
+                  <Icon name="User" className="mr-2" size={18} />
+                  Кабинет
+                </Button>
                 <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:text-primary">
                   <Icon name="LogOut" className="mr-2" size={18} />
                   Выйти
@@ -165,7 +172,7 @@ const Index = () => {
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-3xl font-heading font-bold">Лучшие вакансии</h2>
-                  <Button variant="ghost" className="text-primary hover:text-primary/80">
+                  <Button onClick={() => navigate('/vacancies')} variant="ghost" className="text-primary hover:text-primary/80">
                     Все вакансии
                     <Icon name="ArrowRight" className="ml-2" size={20} />
                   </Button>
@@ -223,50 +230,67 @@ const Index = () => {
         <TabsContent value="cabinet" className="mt-0">
           <section className="py-12 px-4">
             <div className="container mx-auto max-w-6xl">
-              <div className="glass-effect rounded-2xl p-8 border-border/50">
-                <h2 className="text-3xl font-heading font-bold mb-8">Личный кабинет</h2>
-                
-                <div className="grid md:grid-cols-4 gap-6">
-                  <Card onClick={() => navigate('/resume')} className="glass-effect hover:neon-border transition-all cursor-pointer group">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-16 h-16 bg-primary/20 text-primary rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:animate-glow-pulse">
-                        <Icon name="FileText" size={32} />
-                      </div>
-                      <h3 className="font-heading font-semibold mb-2">Резюме</h3>
-                      <p className="text-sm text-muted-foreground">Создать и редактировать</p>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="glass-effect hover:neon-border transition-all cursor-pointer group">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-16 h-16 bg-secondary/20 text-secondary rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:animate-glow-pulse">
-                        <Icon name="Send" size={32} />
-                      </div>
-                      <h3 className="font-heading font-semibold mb-2">Отклики</h3>
-                      <p className="text-sm text-muted-foreground">Просмотр откликов</p>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="glass-effect hover:neon-border transition-all cursor-pointer group">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-16 h-16 bg-accent/20 text-accent rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:animate-glow-pulse">
-                        <Icon name="Heart" size={32} />
-                      </div>
-                      <h3 className="font-heading font-semibold mb-2">Избранное</h3>
-                      <p className="text-sm text-muted-foreground">Сохранённые вакансии</p>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="glass-effect hover:neon-border transition-all cursor-pointer group">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-16 h-16 bg-primary/20 text-primary rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:animate-glow-pulse">
-                        <Icon name="BarChart3" size={32} />
-                      </div>
-                      <h3 className="font-heading font-semibold mb-2">Аналитика</h3>
-                      <p className="text-sm text-muted-foreground">Статистика просмотров</p>
-                    </CardContent>
-                  </Card>
+              {!user ? (
+                <div className="glass-effect rounded-2xl p-12 border-border/50 text-center">
+                  <Icon name="Lock" size={64} className="mx-auto mb-6 text-muted-foreground" />
+                  <h2 className="text-3xl font-heading font-bold mb-4">Войдите в аккаунт</h2>
+                  <p className="text-muted-foreground mb-8">Чтобы получить доступ к личному кабинету</p>
+                  <div className="flex gap-4 justify-center">
+                    <Button onClick={() => navigate('/login')} className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-background">
+                      Войти
+                    </Button>
+                    <Button onClick={() => navigate('/register')} variant="outline">
+                      Регистрация
+                    </Button>
+                  </div>
                 </div>
+              ) : (
+                <div className="glass-effect rounded-2xl p-8 border-border/50">
+                  <h2 className="text-3xl font-heading font-bold mb-8">Личный кабинет</h2>
+                  
+                  <div className="grid md:grid-cols-4 gap-6">
+                    <Card onClick={() => navigate('/resume')} className="glass-effect hover:neon-border transition-all cursor-pointer group">
+                      <CardContent className="p-6 text-center">
+                        <div className="w-16 h-16 bg-primary/20 text-primary rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:animate-glow-pulse">
+                          <Icon name="FileText" size={32} />
+                        </div>
+                        <h3 className="font-heading font-semibold mb-2">Резюме</h3>
+                        <p className="text-sm text-muted-foreground">Создать и редактировать</p>
+                      </CardContent>
+                    </Card>
+
+                    <Card onClick={() => navigate(user.user_type === 'employer' ? '/employer-cabinet' : '/applicant-cabinet')} className="glass-effect hover:neon-border transition-all cursor-pointer group">
+                      <CardContent className="p-6 text-center">
+                        <div className="w-16 h-16 bg-secondary/20 text-secondary rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:animate-glow-pulse">
+                          <Icon name="Send" size={32} />
+                        </div>
+                        <h3 className="font-heading font-semibold mb-2">Отклики</h3>
+                        <p className="text-sm text-muted-foreground">Просмотр откликов</p>
+                      </CardContent>
+                    </Card>
+
+                    <Card onClick={() => navigate(user.user_type === 'employer' ? '/employer-cabinet' : '/applicant-cabinet')} className="glass-effect hover:neon-border transition-all cursor-pointer group">
+                      <CardContent className="p-6 text-center">
+                        <div className="w-16 h-16 bg-accent/20 text-accent rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:animate-glow-pulse">
+                          <Icon name="Heart" size={32} />
+                        </div>
+                        <h3 className="font-heading font-semibold mb-2">Избранное</h3>
+                        <p className="text-sm text-muted-foreground">Сохранённые вакансии</p>
+                      </CardContent>
+                    </Card>
+
+                    <Card onClick={() => navigate(user.user_type === 'employer' ? '/employer-cabinet' : '/applicant-cabinet')} className="glass-effect hover:neon-border transition-all cursor-pointer group">
+                      <CardContent className="p-6 text-center">
+                        <div className="w-16 h-16 bg-primary/20 text-primary rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:animate-glow-pulse">
+                          <Icon name="BarChart3" size={32} />
+                        </div>
+                        <h3 className="font-heading font-semibold mb-2">Аналитика</h3>
+                        <p className="text-sm text-muted-foreground">Статистика просмотров</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              )}
 
                 <div className="mt-8 grid md:grid-cols-3 gap-6">
                   <Card className="glass-effect">

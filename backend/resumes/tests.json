@@ -1,0 +1,29 @@
+{
+  "tests": [
+    {
+      "name": "Создание резюме",
+      "method": "POST",
+      "path": "/",
+      "headers": {
+        "X-Authorization": "Bearer test_token"
+      },
+      "body": {
+        "title": "Моё резюме",
+        "full_name": "Тестовый Пользователь",
+        "email": "test@example.com",
+        "position": "Frontend Developer",
+        "skills": [
+          {
+            "skill_name": "React",
+            "skill_level": "Продвинутый"
+          }
+        ]
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

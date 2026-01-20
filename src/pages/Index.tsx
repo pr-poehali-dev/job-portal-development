@@ -227,7 +227,7 @@ const Index = () => {
                 <h2 className="text-3xl font-heading font-bold mb-8">Личный кабинет</h2>
                 
                 <div className="grid md:grid-cols-4 gap-6">
-                  <Card className="glass-effect hover:neon-border transition-all cursor-pointer group">
+                  <Card onClick={() => navigate('/resume')} className="glass-effect hover:neon-border transition-all cursor-pointer group">
                     <CardContent className="p-6 text-center">
                       <div className="w-16 h-16 bg-primary/20 text-primary rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:animate-glow-pulse">
                         <Icon name="FileText" size={32} />

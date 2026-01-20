@@ -289,56 +289,55 @@ const Index = () => {
                       </CardContent>
                     </Card>
                   </div>
+
+                  <div className="mt-8 grid md:grid-cols-3 gap-6">
+                    <Card className="glass-effect">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <Icon name="MessageSquare" className="text-primary" />
+                          Уведомления
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-muted-foreground mb-4">Получайте уведомления о новых вакансиях</p>
+                        <Button variant="outline" className="w-full border-primary/30">
+                          Настроить
+                        </Button>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="glass-effect">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <Icon name="Filter" className="text-secondary" />
+                          Фильтрация
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-muted-foreground mb-4">Настройте умный поиск вакансий</p>
+                        <Button variant="outline" className="w-full border-secondary/30">
+                          Настроить
+                        </Button>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="glass-effect">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <Icon name="Users" className="text-accent" />
+                          Чат
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-muted-foreground mb-4">Общайтесь с работодателями</p>
+                        <Button variant="outline" className="w-full border-accent/30">
+                          Открыть
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </div>
                 </div>
               )}
-
-                <div className="mt-8 grid md:grid-cols-3 gap-6">
-                  <Card className="glass-effect">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Icon name="MessageSquare" className="text-primary" />
-                        Уведомления
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-4">Получайте уведомления о новых вакансиях</p>
-                      <Button variant="outline" className="w-full border-primary/30">
-                        Настроить
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="glass-effect">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Icon name="Filter" className="text-secondary" />
-                        Фильтрация
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-4">Настройте умный поиск вакансий</p>
-                      <Button variant="outline" className="w-full border-secondary/30">
-                        Настроить
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="glass-effect">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Icon name="Users" className="text-accent" />
-                        Чат
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-4">Общайтесь с работодателями</p>
-                      <Button variant="outline" className="w-full border-accent/30">
-                        Открыть
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
             </div>
           </section>
         </TabsContent>

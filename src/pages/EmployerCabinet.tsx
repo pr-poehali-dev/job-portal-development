@@ -56,7 +56,7 @@ const EmployerCabinet = () => {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem('sessionToken');
+    const token = localStorage.getItem('session_token');
     if (!token) {
       navigate('/login');
       return;
@@ -66,7 +66,7 @@ const EmployerCabinet = () => {
   }, []);
 
   const loadData = async () => {
-    const token = localStorage.getItem('sessionToken');
+    const token = localStorage.getItem('session_token');
     const userStr = localStorage.getItem('user');
     if (!userStr) return;
     
@@ -103,7 +103,7 @@ const EmployerCabinet = () => {
   };
 
   const createVacancy = async () => {
-    const token = localStorage.getItem('sessionToken');
+    const token = localStorage.getItem('session_token');
     
     try {
       const res = await fetch('https://functions.poehali.dev/d62cf512-4bb6-440b-a47e-1c40ac68aec5', {
@@ -150,7 +150,7 @@ const EmployerCabinet = () => {
   };
 
   const updateApplicationStatus = async (appId: number, status: string) => {
-    const token = localStorage.getItem('sessionToken');
+    const token = localStorage.getItem('session_token');
     
     try {
       const res = await fetch('https://functions.poehali.dev/2c41da4d-f2df-4c58-91c0-b1f93972753c', {

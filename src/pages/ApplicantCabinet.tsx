@@ -35,7 +35,7 @@ const ApplicantCabinet = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('sessionToken');
+    const token = localStorage.getItem('session_token');
     if (!token) {
       navigate('/login');
       return;
@@ -45,7 +45,7 @@ const ApplicantCabinet = () => {
   }, []);
 
   const loadData = async () => {
-    const token = localStorage.getItem('sessionToken');
+    const token = localStorage.getItem('session_token');
     
     try {
       const [appsRes, favsRes] = await Promise.all([
@@ -78,7 +78,7 @@ const ApplicantCabinet = () => {
   };
 
   const removeFavorite = async (vacancyId: number) => {
-    const token = localStorage.getItem('sessionToken');
+    const token = localStorage.getItem('session_token');
     
     try {
       const res = await fetch(`https://functions.poehali.dev/675cda5f-c23f-47c9-a0b0-17b8e1c39a83?vacancy_id=${vacancyId}`, {

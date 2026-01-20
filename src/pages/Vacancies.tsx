@@ -76,7 +76,7 @@ const Vacancies = () => {
       return;
     }
 
-    const token = localStorage.getItem('sessionToken');
+    const token = localStorage.getItem('session_token');
     
     try {
       const res = await fetch('https://functions.poehali.dev/2c41da4d-f2df-4c58-91c0-b1f93972753c', {
@@ -122,7 +122,7 @@ const Vacancies = () => {
       return;
     }
 
-    const token = localStorage.getItem('sessionToken');
+    const token = localStorage.getItem('session_token');
     
     try {
       const res = await fetch('https://functions.poehali.dev/675cda5f-c23f-47c9-a0b0-17b8e1c39a83', {

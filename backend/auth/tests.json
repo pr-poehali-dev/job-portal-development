@@ -1,0 +1,43 @@
+{
+  "tests": [
+    {
+      "name": "Регистрация нового пользователя",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "register",
+        "email": "test@example.com",
+        "password": "testpassword123",
+        "full_name": "Тестовый Пользователь",
+        "user_type": "candidate"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "session_token": "string",
+        "user": {
+          "email": "test@example.com",
+          "full_name": "Тестовый Пользователь",
+          "user_type": "candidate"
+        }
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Вход существующего пользователя",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "login",
+        "email": "test@example.com",
+        "password": "testpassword123"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "session_token": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

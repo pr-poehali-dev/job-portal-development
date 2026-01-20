@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -7,7 +8,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
 
 const Index = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('home');
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('session_token');
+    localStorage.removeItem('user');
+    setUser(null);
+  };
 
   const jobCategories = [
     { name: 'Frontend', icon: 'Code', count: 245, color: 'bg-primary/20 text-primary' },
@@ -69,12 +85,26 @@ const Index = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <Button variant="ghost" className="text-foreground hover:text-primary">
-              Войти
-            </Button>
-            <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-background font-semibold">
-              Регистрация
-            </Button>
+            {user ? (
+              <>
+                <span className="text-sm text-muted-foreground hidden md:block">
+                  Привет, <span className="text-foreground font-semibold">{user.full_name}</span>
+                </span>
+                <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:text-primary">
+                  <Icon name="LogOut" className="mr-2" size={18} />
+                  Выйти
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" onClick={() => navigate('/login')} className="text-foreground hover:text-primary">
+                  Войти
+                </Button>
+                <Button onClick={() => navigate('/register')} className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-background font-semibold">
+                  Регистрация
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </nav>

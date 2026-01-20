@@ -75,13 +75,13 @@ const Index = () => {
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center neon-border">
               <Icon name="Zap" className="text-background" size={24} />
             </div>
-            <span className="text-2xl font-heading font-bold neon-glow">JobNova</span>
+            <span className="text-2xl font-heading font-bold neon-glow">Peeky</span>
           </div>
           
           <div className="hidden md:flex items-center gap-6">
             <button onClick={() => navigate('/vacancies')} className="text-muted-foreground hover:text-foreground transition-colors">Вакансии</button>
             <button onClick={() => setActiveTab('cabinet')} className="text-muted-foreground hover:text-foreground transition-colors">Личный кабинет</button>
-            <button className="text-muted-foreground hover:text-foreground transition-colors">О платформе</button>
+            <button onClick={() => navigate('/about')} className="text-muted-foreground hover:text-foreground transition-colors">О платформе</button>
           </div>
 
           <div className="flex items-center gap-3">

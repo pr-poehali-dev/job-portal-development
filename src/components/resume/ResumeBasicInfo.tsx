@@ -1,7 +1,11 @@
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import Icon from '@/components/ui/icon';
+import { useToast } from '@/hooks/use-toast';
 
 interface ResumeBasicInfoProps {
   resumeData: {
@@ -20,6 +24,55 @@ interface ResumeBasicInfoProps {
 }
 
 const ResumeBasicInfo = ({ resumeData, onUpdate }: ResumeBasicInfoProps) => {
+  const { toast } = useToast();
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: 'Ошибка',
+        description: 'Выберите изображение',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: 'Ошибка',
+        description: 'Размер файла не должен превышать 5 МБ',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result as string;
+        onUpdate('photo_url', base64);
+        toast({
+          title: 'Успешно',
+          description: 'Фото загружено'
+        });
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось загрузить фото',
+        variant: 'destructive'
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <Card className="glass-effect border-border/50">
       <CardHeader>
@@ -83,15 +136,59 @@ const ResumeBasicInfo = ({ resumeData, onUpdate }: ResumeBasicInfoProps) => {
             />
           </div>
 
-          <div>
-            <Label htmlFor="photo_url">Фото (URL)</Label>
-            <Input
-              id="photo_url"
-              value={resumeData.photo_url}
-              onChange={(e) => onUpdate('photo_url', e.target.value)}
-              placeholder="https://example.com/photo.jpg"
-              className="bg-background/50 border-primary/30"
-            />
+          <div className="md:col-span-2">
+            <Label htmlFor="photo_upload">Фото профиля</Label>
+            <div className="flex items-center gap-4 mt-2">
+              {resumeData.photo_url && (
+                <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-primary/30">
+                  <img 
+                    src={resumeData.photo_url} 
+                    alt="Фото профиля" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              <div className="flex-1">
+                <input
+                  id="photo_upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => document.getElementById('photo_upload')?.click()}
+                  disabled={uploading}
+                  className="w-full border-primary/30"
+                >
+                  {uploading ? (
+                    <>
+                      <Icon name="Loader2" className="mr-2 animate-spin" size={18} />
+                      Загрузка...
+                    </>
+                  ) : (
+                    <>
+                      <Icon name="Upload" className="mr-2" size={18} />
+                      Выбрать фото
+                    </>
+                  )}
+                </Button>
+                {resumeData.photo_url && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onUpdate('photo_url', '')}
+                    className="w-full mt-2 text-muted-foreground hover:text-destructive"
+                  >
+                    <Icon name="X" className="mr-2" size={16} />
+                    Удалить фото
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
 
           <div>

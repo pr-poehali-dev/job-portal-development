@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
+import ResumeBasicInfo from '@/components/resume/ResumeBasicInfo';
+import ResumeExperience from '@/components/resume/ResumeExperience';
+import ResumeEducation from '@/components/resume/ResumeEducation';
+import ResumeSkills from '@/components/resume/ResumeSkills';
 
 const RESUME_API_URL = 'https://functions.poehali.dev/75a33e6f-3f2f-4f58-9d10-6b8fe65aa44f';
 
@@ -160,6 +159,10 @@ const Resume = () => {
     }
   };
 
+  const updateBasicInfo = (field: string, value: any) => {
+    setResumeData({ ...resumeData, [field]: value });
+  };
+
   const addExperience = () => {
     setResumeData({
       ...resumeData,
@@ -293,349 +296,31 @@ const Resume = () => {
         </div>
 
         <div className="space-y-6">
-          <Card className="glass-effect border-border/50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Icon name="User" className="text-primary" />
-                Основная информация
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="full_name">ФИО *</Label>
-                  <Input
-                    id="full_name"
-                    value={resumeData.full_name}
-                    onChange={(e) => setResumeData({ ...resumeData, full_name: e.target.value })}
-                    className="bg-background/50 border-primary/30"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="position">Желаемая должность *</Label>
-                  <Input
-                    id="position"
-                    value={resumeData.position}
-                    onChange={(e) => setResumeData({ ...resumeData, position: e.target.value })}
-                    className="bg-background/50 border-primary/30"
-                  />
-                </div>
-              </div>
+          <ResumeBasicInfo 
+            resumeData={resumeData}
+            onUpdate={updateBasicInfo}
+          />
 
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={resumeData.email}
-                    onChange={(e) => setResumeData({ ...resumeData, email: e.target.value })}
-                    className="bg-background/50 border-primary/30"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="phone">Телефон</Label>
-                  <Input
-                    id="phone"
-                    value={resumeData.phone}
-                    onChange={(e) => setResumeData({ ...resumeData, phone: e.target.value })}
-                    className="bg-background/50 border-primary/30"
-                  />
-                </div>
-              </div>
+          <ResumeExperience
+            experience={resumeData.experience}
+            onAdd={addExperience}
+            onRemove={removeExperience}
+            onUpdate={updateExperience}
+          />
 
-              <div>
-                <Label htmlFor="location">Город</Label>
-                <Input
-                  id="location"
-                  value={resumeData.location}
-                  onChange={(e) => setResumeData({ ...resumeData, location: e.target.value })}
-                  className="bg-background/50 border-primary/30"
-                />
-              </div>
+          <ResumeEducation
+            education={resumeData.education}
+            onAdd={addEducation}
+            onRemove={removeEducation}
+            onUpdate={updateEducation}
+          />
 
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="salary_min">Зарплата от (₽)</Label>
-                  <Input
-                    id="salary_min"
-                    type="number"
-                    value={resumeData.salary_min || ''}
-                    onChange={(e) => setResumeData({ ...resumeData, salary_min: e.target.value ? parseInt(e.target.value) : null })}
-                    className="bg-background/50 border-primary/30"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="salary_max">Зарплата до (₽)</Label>
-                  <Input
-                    id="salary_max"
-                    type="number"
-                    value={resumeData.salary_max || ''}
-                    onChange={(e) => setResumeData({ ...resumeData, salary_max: e.target.value ? parseInt(e.target.value) : null })}
-                    className="bg-background/50 border-primary/30"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="about_me">О себе</Label>
-                <Textarea
-                  id="about_me"
-                  value={resumeData.about_me}
-                  onChange={(e) => setResumeData({ ...resumeData, about_me: e.target.value })}
-                  className="bg-background/50 border-primary/30 min-h-[100px]"
-                  placeholder="Расскажите о себе, своих достижениях и целях"
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="glass-effect border-border/50">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Icon name="Briefcase" className="text-secondary" />
-                  Опыт работы
-                </CardTitle>
-                <Button onClick={addExperience} variant="outline" size="sm" className="border-primary/30">
-                  <Icon name="Plus" className="mr-2" size={16} />
-                  Добавить
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {resumeData.experience.map((exp, index) => (
-                <div key={index} className="p-4 glass-effect rounded-lg border border-border/30 space-y-3">
-                  <div className="flex justify-between items-start">
-                    <h4 className="font-semibold">Опыт {index + 1}</h4>
-                    <Button
-                      onClick={() => removeExperience(index)}
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive/80"
-                    >
-                      <Icon name="Trash2" size={16} />
-                    </Button>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <div>
-                      <Label>Компания</Label>
-                      <Input
-                        value={exp.company}
-                        onChange={(e) => updateExperience(index, 'company', e.target.value)}
-                        className="bg-background/50 border-primary/30"
-                      />
-                    </div>
-                    <div>
-                      <Label>Должность</Label>
-                      <Input
-                        value={exp.position}
-                        onChange={(e) => updateExperience(index, 'position', e.target.value)}
-                        className="bg-background/50 border-primary/30"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <div>
-                      <Label>Начало</Label>
-                      <Input
-                        type="date"
-                        value={exp.start_date ? exp.start_date.split('T')[0] : ''}
-                        onChange={(e) => updateExperience(index, 'start_date', e.target.value)}
-                        className="bg-background/50 border-primary/30"
-                      />
-                    </div>
-                    <div>
-                      <Label>Окончание</Label>
-                      <Input
-                        type="date"
-                        value={exp.end_date ? exp.end_date.split('T')[0] : ''}
-                        onChange={(e) => updateExperience(index, 'end_date', e.target.value)}
-                        disabled={exp.is_current}
-                        className="bg-background/50 border-primary/30"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id={`current-${index}`}
-                      checked={exp.is_current}
-                      onChange={(e) => updateExperience(index, 'is_current', e.target.checked)}
-                      className="w-4 h-4"
-                    />
-                    <Label htmlFor={`current-${index}`} className="cursor-pointer">По настоящее время</Label>
-                  </div>
-
-                  <div>
-                    <Label>Описание</Label>
-                    <Textarea
-                      value={exp.description}
-                      onChange={(e) => updateExperience(index, 'description', e.target.value)}
-                      className="bg-background/50 border-primary/30"
-                      placeholder="Опишите ваши обязанности и достижения"
-                    />
-                  </div>
-                </div>
-              ))}
-
-              {resumeData.experience.length === 0 && (
-                <p className="text-center text-muted-foreground py-4">Нажмите "Добавить", чтобы добавить опыт работы</p>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="glass-effect border-border/50">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Icon name="GraduationCap" className="text-accent" />
-                  Образование
-                </CardTitle>
-                <Button onClick={addEducation} variant="outline" size="sm" className="border-primary/30">
-                  <Icon name="Plus" className="mr-2" size={16} />
-                  Добавить
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {resumeData.education.map((edu, index) => (
-                <div key={index} className="p-4 glass-effect rounded-lg border border-border/30 space-y-3">
-                  <div className="flex justify-between items-start">
-                    <h4 className="font-semibold">Образование {index + 1}</h4>
-                    <Button
-                      onClick={() => removeEducation(index)}
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive/80"
-                    >
-                      <Icon name="Trash2" size={16} />
-                    </Button>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <div>
-                      <Label>Учебное заведение</Label>
-                      <Input
-                        value={edu.institution}
-                        onChange={(e) => updateEducation(index, 'institution', e.target.value)}
-                        className="bg-background/50 border-primary/30"
-                      />
-                    </div>
-                    <div>
-                      <Label>Степень</Label>
-                      <Input
-                        value={edu.degree}
-                        onChange={(e) => updateEducation(index, 'degree', e.target.value)}
-                        className="bg-background/50 border-primary/30"
-                        placeholder="Бакалавр, Магистр"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label>Специальность</Label>
-                    <Input
-                      value={edu.field_of_study}
-                      onChange={(e) => updateEducation(index, 'field_of_study', e.target.value)}
-                      className="bg-background/50 border-primary/30"
-                    />
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <div>
-                      <Label>Начало</Label>
-                      <Input
-                        type="date"
-                        value={edu.start_date ? edu.start_date.split('T')[0] : ''}
-                        onChange={(e) => updateEducation(index, 'start_date', e.target.value)}
-                        className="bg-background/50 border-primary/30"
-                      />
-                    </div>
-                    <div>
-                      <Label>Окончание</Label>
-                      <Input
-                        type="date"
-                        value={edu.end_date ? edu.end_date.split('T')[0] : ''}
-                        onChange={(e) => updateEducation(index, 'end_date', e.target.value)}
-                        disabled={edu.is_current}
-                        className="bg-background/50 border-primary/30"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id={`edu-current-${index}`}
-                      checked={edu.is_current}
-                      onChange={(e) => updateEducation(index, 'is_current', e.target.checked)}
-                      className="w-4 h-4"
-                    />
-                    <Label htmlFor={`edu-current-${index}`} className="cursor-pointer">Учусь в настоящее время</Label>
-                  </div>
-                </div>
-              ))}
-
-              {resumeData.education.length === 0 && (
-                <p className="text-center text-muted-foreground py-4">Нажмите "Добавить", чтобы добавить образование</p>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="glass-effect border-border/50">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Icon name="Sparkles" className="text-primary" />
-                  Навыки
-                </CardTitle>
-                <Button onClick={addSkill} variant="outline" size="sm" className="border-primary/30">
-                  <Icon name="Plus" className="mr-2" size={16} />
-                  Добавить
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-2 gap-3">
-                {resumeData.skills.map((skill, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <Input
-                      value={skill.skill_name}
-                      onChange={(e) => updateSkill(index, 'skill_name', e.target.value)}
-                      placeholder="Навык"
-                      className="flex-1 bg-background/50 border-primary/30"
-                    />
-                    <select
-                      value={skill.skill_level}
-                      onChange={(e) => updateSkill(index, 'skill_level', e.target.value)}
-                      className="bg-background/50 border border-primary/30 rounded-md px-3 py-2"
-                    >
-                      <option>Начальный</option>
-                      <option>Средний</option>
-                      <option>Продвинутый</option>
-                      <option>Эксперт</option>
-                    </select>
-                    <Button
-                      onClick={() => removeSkill(index)}
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive/80"
-                    >
-                      <Icon name="Trash2" size={16} />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-
-              {resumeData.skills.length === 0 && (
-                <p className="text-center text-muted-foreground py-4">Нажмите "Добавить", чтобы добавить навыки</p>
-              )}
-            </CardContent>
-          </Card>
+          <ResumeSkills
+            skills={resumeData.skills}
+            onAdd={addSkill}
+            onRemove={removeSkill}
+            onUpdate={updateSkill}
+          />
         </div>
       </div>
     </div>

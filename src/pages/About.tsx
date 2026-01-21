@@ -40,10 +40,10 @@ const About = () => {
   ];
 
   const stats = [
-    { value: "10,000+", label: "Активных вакансий" },
-    { value: "5,000+", label: "Компаний" },
-    { value: "50,000+", label: "Соискателей" },
-    { value: "95%", label: "Успешных откликов" }
+    { icon: "Briefcase", label: "Вакансий" },
+    { icon: "Building2", label: "Компаний" },
+    { icon: "Users", label: "Соискателей" },
+    { icon: "TrendingUp", label: "Откликов" }
   ];
 
   return (
@@ -82,10 +82,10 @@ const About = () => {
           {stats.map((stat, index) => (
             <Card key={index} className="glass-effect border-primary/20 hover:neon-border transition-all">
               <CardContent className="p-6 text-center">
-                <div className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
-                  {stat.value}
+                <div className="w-16 h-16 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Icon name={stat.icon} className="text-background" size={32} />
                 </div>
-                <p className="text-muted-foreground">{stat.label}</p>
+                <p className="text-lg font-semibold">{stat.label}</p>
               </CardContent>
             </Card>
           ))}
